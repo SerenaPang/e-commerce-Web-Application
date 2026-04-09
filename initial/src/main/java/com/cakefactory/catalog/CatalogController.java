@@ -15,7 +15,7 @@ class CatalogController {
         this.catalogService = catalogService;
     }
 
-    @GetMapping("/catalog")
+    @GetMapping("/")
     ModelAndView index() {
         return new ModelAndView("catalog", Map.of("items", this.catalogService.getItems()));
     }
