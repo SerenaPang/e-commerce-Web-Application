@@ -1,47 +1,63 @@
 package com.cakefactory.basket;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.cakefactory.catalog.CatalogService;
+import com.cakefactory.catalog.Item;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
 
-import com.cakefactory.catalog.CatalogService;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @SessionScope
 class SessionBasket implements Basket {
-   private final CatalogService catalogService;
-    private final Map<String, Integer> items = new LinkedHashMap<>();
 
-    SessionBasket(CatalogService catalogService) {
+    private final Map<String, BasketItem> items = new ConcurrentHashMap<>();
+    private final CatalogService catalogService;
+
+    public SessionBasket(CatalogService catalogService) {
         this.catalogService = catalogService;
     }
 
-    private int totalItems = 0;
-
     @Override
     public void add(String sku) {
-        totalItems += 1;
+        Item item = this.catalogService.getItemBySku(sku);
+        this.items.compute(sku, (existingSku, existingItem) -> {
+            if (existingItem == null) {
+                return new BasketItem(item, 1);
+            }
+
+            return new BasketItem(existingItem.getItem(), existingItem.getQty() + 1);
+        });
     }
 
     @Override
     public int getTotalItems() {
-        return this.totalItems;
+        return this.items.values().stream().map(BasketItem::getQty).reduce(0, Integer::sum);
     }
 
     @Override
-     public Iterable<BasketItem> getItems() {
-        List<BasketItem> result = new ArrayList<>();
-        for (Map.Entry<String, Integer> entry : items.entrySet()) {
-            var item = catalogService.getItemBySku(entry.getKey());
-            if (item != null) {
-                result.add(new BasketItem(item, entry.getValue()));
+    public Collection<BasketItem> getItems() {
+        return this.items.values();
+    }
+
+    @Override
+    public void remove(String sku) {
+        this.items.computeIfPresent(sku, (s, existingItem) -> {
+            if (existingItem.getQty() == 1) {
+                return null;
             }
-        }
-        return result;
+
+            return new BasketItem(existingItem.getItem(), existingItem.getQty() - 1);
+        });
+    }
+
+    @Override
+    public void clear() {
+        this.items.clear();
     }
 
 }

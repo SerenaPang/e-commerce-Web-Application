@@ -25,9 +25,15 @@ class BasketController {
         return "redirect:/";
     }
 
-        @GetMapping
-    ModelAndView getBasket() {
-        return new ModelAndView("basket", Map.of("items", this.basket.getItems()));
+    @GetMapping
+    ModelAndView showBasket() {
+        return new ModelAndView("basket", Map.of("basketTotal", basket.getTotalItems(), "items", basket.getItems()));
+    }
+
+    @PostMapping("/delete")
+    String removeFromBasket(@RequestParam String sku) {
+        this.basket.remove(sku);
+        return "redirect:/basket";
     }
 
 }
