@@ -5,14 +5,13 @@ import com.cakefactory.catalog.Item;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.SessionScope;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-@SessionScope
+@Scope(value = "session", proxyMode = ScopedProxyMode.INTERFACES)
 class SessionBasket implements Basket {
 
     private final Map<String, BasketItem> items = new ConcurrentHashMap<>();
