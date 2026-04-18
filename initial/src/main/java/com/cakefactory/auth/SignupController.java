@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 
 @Controller
 @RequestMapping("/signup")
-class SignupController {
+public class SignupController {
 
     private final SignupService signupService;
 
