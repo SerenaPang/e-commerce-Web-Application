@@ -19,7 +19,7 @@ class DefaultSignupService implements SignupService {
 
     @Override
     public boolean accountExists(String email) {
-        return this.accountService.exists(email);
+        return false;
     }
 
     @Override
