@@ -5,7 +5,7 @@ import com.cakefactory.account.AccountService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,9 +18,8 @@ import org.springframework.security.web.context.SecurityContextRepository;
 
 import java.util.Collections;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @Configuration
+@EnableWebSecurity
 public class SecurityConfiguration {
 
     @Bean
@@ -33,15 +32,19 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, SecurityContextRepository securityContextRepository) throws Exception {
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-        http
-                .formLogin(withDefaults())
+        http.
+                formLogin((formLogin) ->
+                        formLogin
+                                .loginPage("/login")
+                                .failureUrl("/login")
+                )
                 .authorizeHttpRequests((authz) -> authz
-                    .anyRequest().permitAll()
+                        .requestMatchers("/account").authenticated()
+                        .anyRequest().permitAll()
                 )
                 .securityContext((securityContext) -> securityContext
                         .securityContextRepository(securityContextRepository)
-                );
+                );;
         return http.build();
     }
 
@@ -57,4 +60,6 @@ public class SecurityConfiguration {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
 }

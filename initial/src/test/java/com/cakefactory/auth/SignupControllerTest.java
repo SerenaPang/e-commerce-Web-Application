@@ -2,10 +2,15 @@ package com.cakefactory.auth;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class SignupControllerTest {
 
@@ -17,7 +22,10 @@ class SignupControllerTest {
     void setUp() {
         signupService = mock(SignupService.class);
         securityContextRepository = mock(SecurityContextRepository.class);
-        signupController = new SignupController(signupService,securityContextRepository);
+        signupController = new SignupController(signupService, securityContextRepository);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
     }
 
     @Test

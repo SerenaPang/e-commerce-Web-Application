@@ -1,6 +1,7 @@
 package com.cakefactory.catalog;
 
 import com.cakefactory.account.AccountService;
+import com.cakefactory.auth.SecurityConfiguration;
 import com.cakefactory.basket.Basket;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.htmlunit.MockMvcWebClientBuilder;
@@ -28,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @WebMvcTest(controllers = CatalogController.class)
+@Import(SecurityConfiguration.class)
 class CatalogControllerTest {
 
 	private WebClient webClient;
