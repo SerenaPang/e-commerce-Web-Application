@@ -33,13 +33,16 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, SecurityContextRepository securityContextRepository) throws Exception {
         http.
-                formLogin((formLogin) ->
+                 oauth2Login((oauth2Login) ->
+                        oauth2Login
+                                .loginPage("/login")
+                )
+				.formLogin((formLogin) ->
                         formLogin
                                 .loginPage("/login")
-                                .failureUrl("/login")
                 )
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/account").authenticated()
+                        .requestMatchers("/account/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .securityContext((securityContext) -> securityContext
